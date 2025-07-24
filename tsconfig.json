@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "emitDeclarationOnly": true,
+    "module": "esnext",
+    "target": "esnext"
+  }
+}

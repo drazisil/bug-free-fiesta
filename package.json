@@ -1,0 +1,27 @@
+{
+  "name": "bug-free-fiesta",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "check": "tsc",
+    "dev": "node --watch server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drazisil/bug-free-fiesta.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/drazisil/bug-free-fiesta/issues"
+  },
+  "homepage": "https://github.com/drazisil/bug-free-fiesta#readme",
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "typescript": "^5.8.3"
+  }
+}
