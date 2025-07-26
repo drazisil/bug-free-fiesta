@@ -2,19 +2,7 @@ import { IncomingMessage, ServerResponse } from "node:http";
 import { compareSync } from "bcrypt"
 import { UserRepository } from "./UserRepository.js";
 import { StatusRepository } from "./StatusRepository.js";
-
-/**
- * 
- * @param {ServerResponse} response 
- * @param {number} code
- * @param {string} message 
- */
-function sendResponse(response, code, message) {
-    response.statusCode = 400
-    response.setHeader("content-type", "text/plain")
-    response.end(message)
-
-}
+import { sendResponse } from "./helpers.js";
 
 /**
  * 
