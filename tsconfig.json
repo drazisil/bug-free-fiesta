@@ -7,6 +7,7 @@
     "declarationDir": "./types",
     "emitDeclarationOnly": true,
     "module": "esnext",
-    "target": "esnext"
+    "target": "esnext",
+    "skipLibCheck": true
   }
 }

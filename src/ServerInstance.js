@@ -1,7 +1,9 @@
+import { Socket } from "node:net";
+
 /**
  * @interface ServerInstance
  */
-class ServerInstance {
+export class ServerInstance {
     /**
      * @abstract
      * @param {string} address

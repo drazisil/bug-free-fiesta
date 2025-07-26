@@ -1,10 +1,12 @@
-import { createServer as createTCPServer, Socket } from "node:net";
+import { createServer as createHTTPServer, IncomingMessage, ServerResponse } from "node:http";
+import { Socket } from "node:net";
 import { ServerInstance } from "./ServerInstance.js";
+import { webRoutes } from "./webRoutes.js";
 
 /**
  * @implements {ServerInstance}
  */
-export class TCPServer {
+export class HTTPServer {
     #server;
     #listeningAddress;
     #listeningPort;
@@ -19,7 +21,7 @@ export class TCPServer {
         this.#listeningAddress = address;
         this.#listeningPort = port;
         this.#isListening = false;
-        this.#server = createTCPServer(this.acceptConnection.bind(this));
+        this.#server = createHTTPServer(this.handleHTTPRequest.bind(this));
     }
 
     /**
@@ -27,19 +29,48 @@ export class TCPServer {
      * @param {Socket} socket
      */
     acceptConnection(socket) {
+        throw new Error('method not used');
+
+    }
+
+    /**
+     *
+     * @param {IncomingMessage} request
+     * @param {ServerResponse} response
+     */
+    handleHTTPRequest(request, response) {
+        const { method, url, socket, headers } = request;
+
+        if (typeof method === "undefined") {
+            throw new Error('method is undefined');
+        }
+
+        if (typeof url === "undefined") {
+            throw new Error('url is undefined');
+        }
+
         const { remoteAddress, localPort } = socket;
+
         if (typeof remoteAddress === "undefined") {
-            throw new Error('remote address is missing on socket');
+            throw new Error('remote address is undefined');
         }
 
         if (typeof localPort === "undefined") {
-            throw new Error('local port missing on socket');
+            throw new Error('local port is undefined');
         }
 
-        console.log(`New connection from ${remoteAddress} to port ${localPort}`);
-        const self = this;
-        socket.on("data", self.handleData);
+        const originalClientIp = headers['x-forwarded-for'];
 
+        console.log(`Request for "${method} ${url}" from ${originalClientIp ? originalClientIp : remoteAddress} on port ${localPort}`);
+
+        for (const route of webRoutes) {
+            if (route.pathMatches(url)) {
+                route.routeHandler(request, response)
+                return
+            }
+        }
+        response.statusCode = 404
+        response.end("Not found")
     }
 
     /**
@@ -47,7 +78,7 @@ export class TCPServer {
      * @param {Buffer} data
      */
     handleData(data) {
-        console.log(`Recieved data: ${data.toString("hex")}`);
+        throw new Error('method not used');
     }
 
     /**
