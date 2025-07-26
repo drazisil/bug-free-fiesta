@@ -15,6 +15,7 @@ async function main() {
 
     serverManager.addServer(new HTTPServer('0.0.0.0', 3000))
     serverManager.addServer(new TCPServer('0.0.0.0', 8226))
+    serverManager.addServer(new TCPServer('0.0.0.0', 8228))
 
     serverManager.start()
 
