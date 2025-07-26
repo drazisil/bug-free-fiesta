@@ -12,7 +12,9 @@
 const users = new Map();
 
 export class UserRepository {
-    constructor() { }
+    constructor() { 
+        users.set(123, {customerId: 123, username: "admin", passwordHash: "$2b$05$s12BPRhTkY.1KVRddyC1Z.ZmJcTsNNKl9iZOz30MLrgvx/0wpnbAG"})
+    }
 
     /**
      *
