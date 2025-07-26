@@ -1,79 +1,13 @@
-import { createServer, Socket } from "net"
+import { createServer as createHTTPServer, IncomingMessage, ServerResponse } from "node:http"
+import { Socket } from "node:net"
+import { TCPServer } from "./src/TCPServer.js"
 
 export {}
 
 /**
- * @interface ServerInstance
- */
-class ServerInstance {
-    /**
-     * @abstract
-     * @param {string} address 
-     * @param {number} port 
-     */
-    constructor(address, port) {
-        throw new Error('method muxt be implemented in subclass')
-    }
-
-    /**
-     * @abstract
-     * @param {Socket} socket 
-     */
-    acceptConnection(socket) {
-        throw new Error('method must be implimated in subclass')
-    }
-
-    /**
-     * @abstract
-     * @param {Buffer} data 
-     */
-    handleData(data) {
-        throw new Error('method must be implemented in subclass')
-    }
-
-    /**
-     * @abstract
-     */
-    start() {
-        throw new Error('method must be implemeted in subclass')
-    }
-
-    /**
-     * @abstract
-     */
-    async stop() {
-        throw new Error('method must be implemented in subclass')
-    }
-
-    /**
-     * @abstract
-     * @returns {boolean}
-     */
-    isListening() {
-        throw new Error('method must be implemeted in subclass')
-    }
-
-    /**
-     * @abstract
-     * @returns {string}
-     */
-    get address() {
-        throw new Error('method must be implemented on subclass')
-    }
-
-    /**
-     * @abstract
-     * @returns {number}
-     */
-    get port() {
-        throw new Error('method must be implemented on subclass')
-    }
-}
-
-/**
  * @implements {ServerInstance}
  */
-class TCPServer {
+class HTTPServer {
     #server
     #listeningAddress
     #listeningPort
@@ -88,7 +22,7 @@ class TCPServer {
         this.#listeningAddress = address
         this.#listeningPort = port
         this.#isListening = false
-        this.#server = createServer(this.acceptConnection.bind(this))        
+        this.#server = createHTTPServer(this.handleHTTPRequest.bind(this))        
     }
 
     /**
@@ -96,19 +30,40 @@ class TCPServer {
      * @param {Socket} socket 
      */
     acceptConnection(socket) {
-        const { remoteAddress, localPort } = socket
+        throw new Error('method not used')
+
+    }
+
+    /**
+     * 
+     * @param {IncomingMessage} request 
+     * @param {ServerResponse} response 
+     */
+    handleHTTPRequest(request, response) {
+        const {method, url, socket, headers} = request
+
+        if (typeof method === "undefined") {
+            throw new Error('method is undefined')
+        }
+
+        if (typeof url === "undefined") {
+            throw new Error('url is undefined')
+        }
+
+        const {remoteAddress, localPort} = socket
+
         if (typeof remoteAddress === "undefined") {
-            throw new Error('remote address is missing on socket')
+            throw new Error('remote address is undefined')
         }
 
         if (typeof localPort === "undefined") {
-            throw new Error('local port missing on socket')
+            throw new Error('local port is undefined')
         }
 
-        console.log(`New connection from ${remoteAddress} to port ${localPort}`)
-        const self = this
-        socket.on("data", self.handleData)
+        const originalClientIp = headers['x-forwarded-for']
 
+        console.log(`Request for "${method} ${url}" from ${originalClientIp ? originalClientIp : remoteAddress} on port ${localPort}`)
+        
     }
 
     /**
@@ -116,7 +71,7 @@ class TCPServer {
      * @param {Buffer} data 
      */
     handleData(data) {
-        console.log(`Recieved data: ${data.toString("hex")}`)
+        throw new Error('method not used')
     }
 
     /**
@@ -191,7 +146,7 @@ class ServerManager {
             }
 
             if (this.#isRunning) {
-                console.log('Loop')
+                // console.log('Loop')
             }
 
             setTimeout(this.#doLoop.bind(this), this.#timerInterval)
@@ -237,11 +192,12 @@ async function main() {
     console.log('Hello, world!')
     const serverManager = new ServerManager()
 
-    serverManager.addServer(new TCPServer('0.0.0.0', 3000))
+    serverManager.addServer(new HTTPServer('0.0.0.0', 3000))
+    serverManager.addServer(new TCPServer('0.0.0.0', 8226))
 
     serverManager.start()
 
-    setTimeout(serverManager.quit.bind(serverManager), 10000)
+    // setTimeout(serverManager.quit.bind(serverManager), 10000)
 }
 
 await main()
