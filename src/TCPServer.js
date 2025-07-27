@@ -1,5 +1,6 @@
 import { createServer as createTCPServer, Socket } from "node:net";
 import { ServerInstance } from "./ServerInstance.js";
+import { getPacketSerializer } from "./serialize.js";
 
 /**
  * @implements {ServerInstance}
@@ -48,6 +49,17 @@ export class TCPServer {
      */
     handleData(data) {
         console.log(`Recieved data: ${data.toString("hex")}`);
+
+        const packetserializer = getPacketSerializer(data)
+
+        if (packetserializer === null) {
+            console.log(`unable to locate matching packet serializer`)
+            return
+        }
+
+        const packet = packetserializer.Parse(data)
+
+        console.log(`Identified packet as ${packet.packetName}`)
     }
 
     /**
