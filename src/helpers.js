@@ -29,3 +29,22 @@ export function getBytesAtOffset(data, start, len) {
     return Buffer.from(data.subarray(start, neededLength));
 }
 
+/**
+ * 
+ * @param {Buffer} data 
+ * @returns {{messageId: number, messageLength: number, body: Buffer}}
+ */
+export function readNPSHeader(data) {
+    if (data.length < 12) {
+        throw new Error('Not enough data to read header')
+    }
+    const messageId = data.readUint16BE(0)
+    const messageLength = data.readUint16BE(2)
+    const body = Buffer.from(data.subarray(12))
+    return {
+        messageId,
+        messageLength,
+        body
+    }
+}
+
