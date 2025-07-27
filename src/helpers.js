@@ -47,4 +47,34 @@ export function readNPSHeader(data) {
         body
     }
 }
+/**
+ *
+ * @param {Buffer} data
+ * @returns {{value: Buffer, remainingBody: Buffer}}
+ */
+export function getNextPrefixedValue(data) {
+    let remainingBody = data;
+
+    if (remainingBody.length < 2) {
+        throw new Error('not enough bytes to get length');
+
+    }
+
+    let nextLength = remainingBody.readUInt16BE();
+    remainingBody = remainingBody.subarray(2);
+
+    if (remainingBody.length < nextLength) {
+        throw new Error(`Not enough data for next value. need ${nextLength}, got ${remainingBody.length}`);
+
+    }
+
+    const value = remainingBody.subarray(0, nextLength);
+
+    return {
+        value,
+        remainingBody
+    };
+
+
+}
 
