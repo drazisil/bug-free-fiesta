@@ -1,6 +1,8 @@
+import { Cipheriv, createCipheriv, Decipheriv } from "node:crypto";
 import { getBytesAtOffset, getNextPrefixedValue, readNPSHeader } from "./helpers.js";
-import {Packet} from "./Packet.js"
-
+import { Packet } from "./Packet.js"
+import { StatusRepository } from "./StatusRepository.js";
+import { KeyRepository } from "./KeyRepository.js";
 
 /**
  * @implements {Packet}
@@ -29,7 +31,7 @@ export class NPSUserLoginPacket {
     deserialize(data) {
         console.log(`deserializing ${this.packetName}`)
 
-        const {messageId, messageLength, body} = readNPSHeader(data)
+        const { messageId, messageLength, body } = readNPSHeader(data)
 
         if (body.length !== messageLength - 12) {
             console.log(`Error parsing header, body is ${body.length} bytes, expected ${messageLength - 12} bytes`)
@@ -37,15 +39,19 @@ export class NPSUserLoginPacket {
         }
 
         let nextLength = 0
+        let r
 
-        let { value, remainingBody} = getNextPrefixedValue(body)
+        r = getNextPrefixedValue(body)
+
+        let value = r.value
+        let remainingBody = r.remainingBody
 
         this.sessionToken = value
-        
+
         console.log(`Session token: ${this.sessionToken}`)
 
         // Skip the empty container header
-        remainingBody = remainingBody.subarray(4)
+        remainingBody = remainingBody.subarray(2)
 
         if (remainingBody.length < 2) {
             console.log('not enough bytes to get length')
@@ -53,6 +59,29 @@ export class NPSUserLoginPacket {
         }
 
         nextLength = remainingBody.readUint16BE()
+
+        const statusRepository = new StatusRepository()
+
+        const user = statusRepository.getSession(this.sessionToken.toString("utf8"))
+
+        if (user === null) {
+            throw new Error(`unable to find active session for token "${this.sessionToken.toString("utf8")}"`)
+        }
+
+        console.log(`located customerId ${user.customerId} for token ${this.sessionToken.toString("utf8")}`)
+
+        r = getNextPrefixedValue(remainingBody)
+        value = r.value
+        remainingBody = r.remainingBody
+
+        this.sessionKey = value
+
+        const keyRepository = new KeyRepository('data/private_key.pem')
+
+        keyRepository.parseKey(user.customerId, value)
+
+
+
     }
 
     /**
@@ -71,8 +100,8 @@ export class NPSUserLoginPacket {
      * @returns {NPSUserLoginPacket}
      */
     static Parse(data) {
-        const self = new NPSUserLoginPacket()        
+        const self = new NPSUserLoginPacket()
         self.deserialize(data)
         return self
-     }
+    }
 }

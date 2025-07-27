@@ -72,7 +72,7 @@ export function getNextPrefixedValue(data) {
 
     return {
         value,
-        remainingBody
+        remainingBody: Buffer.from(remainingBody.subarray(nextLength))
     };
 
 

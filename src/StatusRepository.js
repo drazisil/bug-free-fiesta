@@ -8,7 +8,7 @@
 import { randomUUID } from "node:crypto"
 
 /**
- * @type {Map<number, StatusRecord}
+ * @type {Map<number, StatusRecord>}
  */
 const activeSessions = new Map()
 
@@ -28,6 +28,22 @@ export class StatusRepository {
         })
 
         return sessionToken
+    }
+
+    /**
+     * 
+     * @param {string} sessionToken 
+     * @returns {StatusRecord | null}
+     */
+    getSession(sessionToken) {
+
+        for (const session of activeSessions.values()) {
+            if (session.sessionToken === sessionToken) {
+                return session
+            }
+        }
+        return null
+
     }
 
 }
