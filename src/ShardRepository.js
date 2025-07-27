@@ -40,7 +40,7 @@ export class ShardRepository {
       Status_Reason=${shard.statusReason}
       ServerGroup_Name=${shard.serverGroup}
       Population=${shard.population}
-      MaxPersonasPerUser=${shard.maxPersonasAllowedPerUser}}
+      MaxPersonasPerUser=${shard.maxPersonasAllowedPerUser}
       DiagnosticServerHost=${shard.host}
       DiagnosticServerPort=80`;
             shardResponse.push(shardString)
