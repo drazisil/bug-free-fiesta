@@ -92,8 +92,6 @@ export class KeyRepository {
         const sessionKeyLength = decrypted.readInt16BE(0);
         const sessionKey = decrypted.subarray(2, sessionKeyLength + 2).toString("hex");
         const expires = decrypted.readInt32BE(sessionKeyLength + 2);
-
-        console.dir({ sessionKey, expires });
     }
 
     /**
