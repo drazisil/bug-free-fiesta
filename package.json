@@ -13,8 +13,8 @@
     "url": "git+https://github.com/drazisil/bug-free-fiesta.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Molly Crendraven",
+  "license": "LGPL-3.0-or-later",
   "type": "module",
   "bugs": {
     "url": "https://github.com/drazisil/bug-free-fiesta/issues"
