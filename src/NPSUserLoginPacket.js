@@ -31,44 +31,34 @@ export class NPSUserLoginPacket {
     deserialize(data) {
         console.log(`deserializing ${this.packetName}`)
 
-        const { messageId, messageLength, body } = readNPSHeader(data)
-
-        if (body.length !== messageLength - 12) {
-            console.log(`Error parsing header, body is ${body.length} bytes, expected ${messageLength - 12} bytes`)
-            return
-        }
-
         let nextLength = 0
         let r
 
+        const { messageId, messageLength, body } = readNPSHeader(data)
+
+        // TODO: make repeatable
         r = getNextPrefixedValue(body)
 
         let value = r.value
         let remainingBody = r.remainingBody
+        // End TODO
 
         this.sessionToken = value
 
         console.log(`Session token: ${this.sessionToken}`)
-
-        // Skip the empty container header
-        remainingBody = remainingBody.subarray(2)
-
-        if (remainingBody.length < 2) {
-            console.log('not enough bytes to get length')
-            return
-        }
-
-        nextLength = remainingBody.readUint16BE()
-
+       
         const statusRepository = new StatusRepository()
-
+        
         const user = statusRepository.getSession(this.sessionToken.toString("utf8"))
-
+        
         if (user === null) {
             throw new Error(`unable to find active session for token "${this.sessionToken.toString("utf8")}"`)
         }
-
+        
         console.log(`located customerId ${user.customerId} for token ${this.sessionToken.toString("utf8")}`)
+
+        // Skip the empty container header
+        remainingBody =  remainingBody.subarray(2)
 
         r = getNextPrefixedValue(remainingBody)
         value = r.value
@@ -80,6 +70,7 @@ export class NPSUserLoginPacket {
 
         keyRepository.parseKey(user.customerId, value)
 
+        keyRepository.saveKey(user.customerId, this.sessionKey.toString("utf8"))
 
 
     }
