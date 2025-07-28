@@ -9,6 +9,11 @@ import { KeyRepository } from "./KeyRepository.js";
  */
 
 export class NPSUserLoginPacket {
+    #customerId
+
+    constructor() {
+        this.#customerId = -1
+    }
 
     get packetName() {
         return 'NPS_USER_LOGIN';
@@ -72,7 +77,11 @@ export class NPSUserLoginPacket {
 
         keyRepository.saveKey(user.customerId, this.sessionKey.toString("utf8"))
 
+        this.#customerId = user.customerId
+    }
 
+    get customerId() {
+        return this.#customerId
     }
 
     /**

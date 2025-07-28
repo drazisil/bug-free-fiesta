@@ -1,6 +1,8 @@
 import { createServer as createTCPServer, Socket } from "node:net";
 import { ServerInstance } from "./ServerInstance.js";
 import { getPacketSerializer } from "./serialize.js";
+import { NPSUserLoginPacket } from "./NPSUserLoginPacket.js";
+import { handlePacket } from "./handlePacket.js";
 
 /**
  * @implements {ServerInstance}
@@ -39,16 +41,21 @@ export class TCPServer {
 
         console.log(`New connection from ${remoteAddress} to port ${localPort}`);
         const self = this;
-        socket.on("data", self.handleData);
+        socket.on("data", (data) => { self.handleData(data, {customerId: -1, socket}) });
 
     }
 
     /**
      *
      * @param {Buffer} data
+     * @param {import("./helpers.js").TaggedSocket | null} socket 
      */
-    handleData(data) {
+    handleData(data, socket = null) {
         console.log(`Recieved data: ${data.toString("hex")}`);
+
+        if (socket === null) {
+            throw new Error('Socket is null!')
+        }
 
         const packetserializer = getPacketSerializer(data)
 
@@ -60,6 +67,13 @@ export class TCPServer {
         const packet = packetserializer.Parse(data)
 
         console.log(`Identified packet as ${packet.packetName}`)
+
+        if (packet instanceof NPSUserLoginPacket) {
+            socket.customerId = packet.customerId
+        }
+
+        // Route packet
+        handlePacket(packet, socket)
     }
 
     /**

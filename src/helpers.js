@@ -1,4 +1,5 @@
 import { ServerResponse } from "node:http";
+import { Socket } from "node:net";
 
 /**
  *
@@ -47,6 +48,24 @@ export function readNPSHeader(data) {
         body
     }
 }
+
+/**
+ * 
+ * @param {number} messageId 
+ * @param {Buffer} body 
+ * @returns {Buffer}
+ */
+export function writeNPSHeader(messageId, body) {
+    const headerBuffer = Buffer.alloc(12)
+    headerBuffer.writeUInt16BE(messageId)
+    headerBuffer.writeUInt16BE(body.length + 12, 2)
+    headerBuffer.writeUInt16BE(257, 4)
+    headerBuffer.writeUInt16BE(0, 6)
+    headerBuffer.writeUInt32BE(body.length + 12, 8)
+
+    return Buffer.concat([headerBuffer, body])
+}
+
 /**
  *
  * @param {Buffer} data
@@ -74,7 +93,11 @@ export function getNextPrefixedValue(data) {
         value,
         remainingBody: Buffer.from(remainingBody.subarray(nextLength))
     };
-
-
 }
+
+/**
+ * @typedef TaggedSocket
+ * @property {number} customerId
+ * @property {{read: () => Buffer, write: (data: Buffer) => void, end: () => void}} socket
+ */
 
