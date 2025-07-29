@@ -41,6 +41,7 @@ export class TCPServer {
 
         console.log(`New connection from ${remoteAddress} to port ${localPort}`);
         const self = this;
+        socket.on("error", (err) => { console.log(err)})
         socket.on("data", (data) => { self.handleData(data, {customerId: -1, socket}) });
 
     }
