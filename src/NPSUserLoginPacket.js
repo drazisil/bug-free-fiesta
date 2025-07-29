@@ -75,6 +75,9 @@ export class NPSUserLoginPacket {
 
         keyRepository.parseKey(user.customerId, value)
 
+        user.setSessionKey(this.sessionKey.toString("utf8"))
+        statusRepository.updateSession(user.customerId, user)
+        
         keyRepository.saveKey(user.customerId, this.sessionKey.toString("utf8"))
 
         this.#customerId = user.customerId

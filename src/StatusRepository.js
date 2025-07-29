@@ -1,9 +1,50 @@
 
-/**
- * @typedef StatusRecord
- * @property {number} customerId
- * @property {string} sessionToken
- */
+export class StatusRecord {
+    #customerId
+    #sessionToken
+    /**
+     * @type {string | null}
+     */
+    #sessionKey
+
+
+    /**
+     * 
+     * @param {number} customerId 
+     * @param {string} sessionToken 
+     */
+    constructor(customerId, sessionToken) {
+        this.#customerId = customerId
+        this.#sessionToken = sessionToken
+        this.#sessionKey = null
+    }
+
+    get customerId() {
+        return this.#customerId
+    }
+
+    get sessionToken() {
+        return this.#sessionToken
+    }
+
+    /**
+     * 
+     * @param {string} sessionKey 
+     */
+    setSessionKey(sessionKey) {
+        if (this.#sessionKey !== null) {
+            throw new Error(`session key alread set for customer ${this.#customerId}`)
+        }
+        this.#sessionKey = sessionKey
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    isKeySet() {
+        return this.#sessionKey !== null
+    }
+}
 
 import { randomUUID } from "node:crypto"
 
@@ -12,7 +53,7 @@ import { randomUUID } from "node:crypto"
  */
 const activeSessions = new Map()
 
-export class StatusRepository { 
+export class StatusRepository {
 
     /**
      * 
@@ -22,10 +63,8 @@ export class StatusRepository {
     createSession(customerId) {
         const sessionToken = randomUUID()
 
-        activeSessions.set(customerId, {
-            customerId, 
-            sessionToken,
-        })
+        activeSessions.set(customerId, new StatusRecord(customerId,
+            sessionToken))
 
         return sessionToken
     }
@@ -44,6 +83,30 @@ export class StatusRepository {
         }
         return null
 
+    }
+
+    /**
+     * 
+     * @param {number} customerId
+     * @returns {StatusRecord | null}
+     */
+    getUserSession(customerId) {
+                for (const session of activeSessions.values()) {
+            if (session.customerId === customerId) {
+                return session
+            }
+        }
+        return null
+
+    }
+
+    /**
+     * 
+     * @param {number} customerId 
+     * @param {StatusRecord} statusRecord 
+     */
+    updateSession(customerId, statusRecord) {
+        activeSessions.set(customerId, statusRecord)
     }
 
 }
