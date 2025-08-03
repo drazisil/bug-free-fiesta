@@ -63,7 +63,9 @@ export function writeNPSHeader(messageId, body) {
     headerBuffer.writeUInt16BE(0, 6)
     headerBuffer.writeUInt32BE(body.length + 12, 8)
 
-    return Buffer.concat([headerBuffer, body])
+    const extraBytes = Buffer.alloc(12 + body.length % 8)
+
+    return Buffer.concat([headerBuffer, body, extraBytes])
 }
 
 /**
@@ -93,6 +95,33 @@ export function getNextPrefixedValue(data) {
         value,
         remainingBody: Buffer.from(remainingBody.subarray(nextLength))
     };
+}
+
+/**
+ * 
+ * @param {Buffer} buffer 
+ * @param {Buffer} value 
+ * @param {number} offset
+ * @returns {{nextOffset: number, buffer: Buffer}} length byte writted
+ */
+export function writeNextPrefixedValue(buffer, value, offset) {
+
+    const length = value.byteLength
+
+    const nextOffset = offset + length + 2
+
+    if (buffer.byteLength < nextOffset) {
+        throw new Error(`Unable to write value, net enough space left in buffer. Need ${nextOffset} bytes, got ${buffer.byteLength} bytes`)
+    }
+
+    buffer.writeUInt16BE(length, offset)
+    buffer.copy(value, offset + 2)
+
+    return {
+        nextOffset,
+        buffer
+    }
+
 }
 
 /**

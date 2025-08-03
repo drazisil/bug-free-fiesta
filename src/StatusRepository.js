@@ -1,52 +1,6 @@
 
-export class StatusRecord {
-    #customerId
-    #sessionToken
-    /**
-     * @type {string | null}
-     */
-    #sessionKey
-
-
-    /**
-     * 
-     * @param {number} customerId 
-     * @param {string} sessionToken 
-     */
-    constructor(customerId, sessionToken) {
-        this.#customerId = customerId
-        this.#sessionToken = sessionToken
-        this.#sessionKey = null
-    }
-
-    get customerId() {
-        return this.#customerId
-    }
-
-    get sessionToken() {
-        return this.#sessionToken
-    }
-
-    /**
-     * 
-     * @param {string} sessionKey 
-     */
-    setSessionKey(sessionKey) {
-        if (this.#sessionKey !== null) {
-            throw new Error(`session key alread set for customer ${this.#customerId}`)
-        }
-        this.#sessionKey = sessionKey
-    }
-
-    /**
-     * @returns {boolean}
-     */
-    isKeySet() {
-        return this.#sessionKey !== null
-    }
-}
-
 import { randomUUID } from "node:crypto"
+import { StatusRecord } from "./StatusRecord.js"
 
 /**
  * @type {Map<number, StatusRecord>}
