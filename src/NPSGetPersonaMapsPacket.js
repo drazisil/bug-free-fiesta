@@ -1,6 +1,7 @@
 import { getBytesAtOffset, readNPSHeader } from "./helpers.js";
 import { Packet } from "./Packet.js";
 
+
 /**
  * @implements {Packet}
  */
@@ -14,6 +15,10 @@ export class NPSGetPersonaMapsPacket {
 
     get packetName() {
         return 'NPS_GET_PERSONA_MAPS';
+    }
+
+    get customerId() {
+        return this.#customerId
     }
 
     /**

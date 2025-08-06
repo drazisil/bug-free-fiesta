@@ -3,6 +3,8 @@ import { writeNPSHeader } from "./helpers.js";
 import { NPSUserLoginPacket } from "./NPSUserLoginPacket.js";
 import { Packet } from "./Packet.js";
 import { StatusRepository } from "./StatusRepository.js";
+import { NPSGetPersonaMapsPacket } from "./NPSGetPersonaMapsPacket.js";
+import { UserGameData } from "./UserGameData.js";
 
 
 
@@ -42,6 +44,26 @@ export function handlePacket(packet, connectionSocket) {
         console.log(`Writting response: ${response.toString("hex")}`)
                 
         connectionSocket.socket.write(ack)
+        connectionSocket.socket.write(response)
+
+        return null
+    }
+
+    if (packet instanceof NPSGetPersonaMapsPacket) {
+        const user = new UserGameData()
+        user.setUserInfo(packet.customerId, 1, "Molly", 42)
+        console.log(`writing user: ${user.toString()}`)
+
+        const lengthBuffer = Buffer.alloc(2)
+        lengthBuffer.writeUInt16BE(1)
+
+        const maxPersonaBuffer = Buffer.alloc(2)
+        maxPersonaBuffer.writeUInt16BE(1)
+
+        
+
+        const response = writeNPSHeader(0x607, Buffer.concat([lengthBuffer, maxPersonaBuffer, user.serializePersona()]))
+        console.log(`Writting response: ${response.toString("hex")}`)
         connectionSocket.socket.write(response)
 
         return null

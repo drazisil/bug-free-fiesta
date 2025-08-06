@@ -102,7 +102,7 @@ export function getNextPrefixedValue(data) {
  * @param {Buffer} buffer 
  * @param {Buffer} value 
  * @param {number} offset
- * @returns {{nextOffset: number, buffer: Buffer}} length byte writted
+ * @returns {{nextOffset: number, buffer: Buffer}} length byte written
  */
 export function writeNextPrefixedValue(buffer, value, offset) {
 
@@ -115,13 +115,46 @@ export function writeNextPrefixedValue(buffer, value, offset) {
     }
 
     buffer.writeUInt16BE(length, offset)
-    buffer.copy(value, offset + 2)
+    value.copy(buffer, offset + 2)
 
     return {
         nextOffset,
         buffer
     }
 
+}
+
+/**
+ * 
+ * @param {Buffer} buffer
+ * @param {boolean} b
+ * @param {number} offset
+ * @returns {{nextOffset: number, buffer: Buffer}} next offset, and buffer with value written
+ */
+export function writeShortBool(buffer, b, offset) {
+    const value = b === true ? 1 : 0
+    const nextOffset = offset + 2
+
+    if (buffer.byteLength < nextOffset) {
+        throw new Error(`Unable to write value, net enough space left in buffer. Need ${nextOffset} bytes, got ${buffer.byteLength} bytes`)
+    }
+
+    buffer.writeUInt16BE(value, offset)
+
+    return {
+        nextOffset,
+        buffer
+    }
+
+}
+
+/**
+ * Rounds a number up to the nearest multiple of 4 using bitwise operations
+ * @param {number} num - The number to round up
+ * @returns {number} The number rounded up to the nearest multiple of 4
+ */
+export function align4(num) {
+    return (num + 3) & ~3;
 }
 
 /**
