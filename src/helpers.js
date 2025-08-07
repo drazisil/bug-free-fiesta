@@ -57,13 +57,13 @@ export function readNPSHeader(data) {
  */
 export function writeNPSHeader(messageId, body) {
     const headerBuffer = Buffer.alloc(12)
+    const extraBytes = Buffer.alloc(12 + body.length % 8)
     headerBuffer.writeUInt16BE(messageId)
-    headerBuffer.writeUInt16BE(body.length + 12, 2)
+    headerBuffer.writeUInt16BE(body.length + 12 + extraBytes.length, 2)
     headerBuffer.writeUInt16BE(257, 4)
     headerBuffer.writeUInt16BE(0, 6)
-    headerBuffer.writeUInt32BE(body.length + 12, 8)
+    headerBuffer.writeUInt32BE(body.length + 12 + extraBytes.length, 8)
 
-    const extraBytes = Buffer.alloc(12 + body.length % 8)
 
     return Buffer.concat([headerBuffer, body, extraBytes])
 }

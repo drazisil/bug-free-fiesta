@@ -92,19 +92,7 @@ export class UserGameData {
                 + 4 // gameUserId
                 + 4 // shardId
                 + 4 // createDate
-                + align4(2 + this.#gameUsername.length)
-            + align4(2) // isOnSystem
-            + 4 // purchaseDate
-            + align4(2 + this.#serialNumber.length)
-            + 4 // timeOnline
-            + 4 // timeInGame
-            + align4(2 + this.#gameSpecificBlob.length)
-            + align4(2 + this.#personalBlob.length)
-            + align4(2 + this.#pictureBlob.length)
-            + align4(2) // dnd
-            + 4 // gameStart
-            + align4(2 + this.#currentKey.length)
-            + align4(2) // personaLevel
+                + 2 + this.#gameUsername.length
     }
 
     get packetName() {

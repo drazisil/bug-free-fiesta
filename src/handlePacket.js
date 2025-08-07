@@ -57,12 +57,12 @@ export function handlePacket(packet, connectionSocket) {
         const lengthBuffer = Buffer.alloc(2)
         lengthBuffer.writeUInt16BE(1)
 
-        const maxPersonaBuffer = Buffer.alloc(2)
-        maxPersonaBuffer.writeUInt16BE(1)
+        const maxPersonaBuffer = Buffer.alloc(1)
+        maxPersonaBuffer.writeUInt8(1)
 
         
 
-        const response = writeNPSHeader(0x607, Buffer.concat([lengthBuffer, maxPersonaBuffer, user.serializePersona()]))
+        const response = writeNPSHeader(0x607, Buffer.concat([lengthBuffer, maxPersonaBuffer, Buffer.alloc(1), user.serializePersona()]))
         console.log(`Writting response: ${response.toString("hex")}`)
         connectionSocket.socket.write(response)
 
