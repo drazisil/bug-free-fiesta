@@ -189,7 +189,7 @@ export class UserGameData {
         let r
 
         buffer.writeUInt32BE(this.#customerId, offset)
-        offset += 
+        offset += 4
         buffer.writeUInt32BE(this.#gameUserId, offset)
         offset += 4
         buffer.writeUInt32BE(this.#shardId, offset)
