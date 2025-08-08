@@ -1,4 +1,5 @@
 import { NPSGetPersonaMapsPacket } from "./NPSGetPersonaMapsPacket.js";
+import { NPSRegisterGameLoginPacket } from "./NPSRegisterGameLoginPacket.js";
 import { NPSUserLoginPacket } from "./NPSUserLoginPacket.js";
 import { Packet } from "./Packet.js";
 
@@ -7,6 +8,7 @@ import { Packet } from "./Packet.js";
  */
 const supportedCommands = new Map()
 supportedCommands.set(0x501, NPSUserLoginPacket)
+supportedCommands.set(0x503, NPSRegisterGameLoginPacket)
 supportedCommands.set(0x532, NPSGetPersonaMapsPacket)
 
 /**

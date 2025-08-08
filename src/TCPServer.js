@@ -44,6 +44,11 @@ export class TCPServer {
         socket.on("error", (err) => { console.log(err)})
         socket.on("data", (data) => { self.handleData(data, {customerId: -1, socket}) });
 
+        if (localPort === 7003) {
+            console.log('sending ok to login packet')
+            socket.write(Buffer.from([0x02, 0x30, 0x00, 0x04]))
+        }
+
     }
 
     /**

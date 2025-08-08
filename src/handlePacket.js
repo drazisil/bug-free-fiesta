@@ -5,6 +5,7 @@ import { Packet } from "./Packet.js";
 import { StatusRepository } from "./StatusRepository.js";
 import { NPSGetPersonaMapsPacket } from "./NPSGetPersonaMapsPacket.js";
 import { UserGameData } from "./UserGameData.js";
+import { NPSRegisterGameLoginPacket } from "./NPSRegisterGameLoginPacket.js";
 
 
 
@@ -68,6 +69,17 @@ export function handlePacket(packet, connectionSocket) {
 
         return null
     }
+
+    if (packet instanceof NPSRegisterGameLoginPacket) {
+
+        const response = writeNPSHeader(0x207, Buffer.alloc(0))
+
+        console.log(`Writting response: ${response.toString("hex")}`)
+        connectionSocket.socket.write(response)
+
+        return null
+    }
+
 
     connectionSocket.socket.end()
 
