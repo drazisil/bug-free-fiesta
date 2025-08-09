@@ -36,10 +36,9 @@ export class NPSUserLoginPacket {
     deserialize(data) {
         console.log(`deserializing ${this.packetName}`)
 
-        let nextLength = 0
         let r
 
-        const { messageId, messageLength, body } = readNPSHeader(data)
+        const { body } = readNPSHeader(data)
 
         // TODO: make repeatable
         r = getNextPrefixedValue(body)

@@ -53,9 +53,9 @@ export class NPSRegisterGameLoginPacket {
     deserialize(data) {
         console.log(`deserializing ${this.packetName}`)
 
-        const { messageLength, body } = readNPSHeader(data)
+        const {headerSize, messageLength, body } = readNPSHeader(data)
 
-        const neededLength = messageLength - 12
+        const neededLength = messageLength - headerSize
         if (body.length < neededLength) {
             throw new Error(`remaining data does not match expected length. expected ${neededLength} bytes, got ${body.length} bytes`)
         }
