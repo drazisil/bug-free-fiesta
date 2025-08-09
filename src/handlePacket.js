@@ -6,6 +6,7 @@ import { StatusRepository } from "./StatusRepository.js";
 import { NPSGetPersonaMapsPacket } from "./NPSGetPersonaMapsPacket.js";
 import { UserGameData } from "./UserGameData.js";
 import { NPSRegisterGameLoginPacket } from "./NPSRegisterGameLoginPacket.js";
+import { NPSLoginPacket } from "./NPSLoginPacket.js";
 
 
 
@@ -78,6 +79,14 @@ export function handlePacket(packet, connectionSocket) {
         connectionSocket.socket.write(response)
 
         return null
+    }
+
+    if (packet instanceof NPSLoginPacket) {
+
+        console.log(`Request for customer id ${packet.customerId} to login with persona ${packet.personaName}(${packet.personaId})`)
+
+        return null
+
     }
 
 

@@ -82,18 +82,27 @@ export function writeNPSHeader(messageId, body) {
 /**
  *
  * @param {Buffer} data
+ * @param {2 | 4} prefixSize
  * @returns {{value: Buffer, remainingBody: Buffer}}
  */
-export function getNextPrefixedValue(data) {
+export function getNextPrefixedValue(data, prefixSize = 2) {
     let remainingBody = data;
 
-    if (remainingBody.length < 2) {
-        throw new Error('not enough bytes to get length');
+    if (remainingBody.length < prefixSize) {
+        throw new Error(`not enough bytes to get length. need ${prefixSize}, got ${remainingBody.length}`);
 
     }
 
-    let nextLength = remainingBody.readUInt16BE();
-    remainingBody = remainingBody.subarray(2);
+    let nextLength
+
+    if (prefixSize === 4) {
+        
+        nextLength = remainingBody.readUInt32BE();
+    } else {
+        nextLength = remainingBody.readUInt16BE();
+    }
+
+    remainingBody = remainingBody.subarray(prefixSize);
 
     if (remainingBody.length < nextLength) {
         throw new Error(`Not enough data for next value. need ${nextLength}, got ${remainingBody.length}`);
@@ -166,6 +175,17 @@ export function writeShortBool(buffer, b, offset) {
  */
 export function align4(num) {
     return (num + 3) & ~3;
+}
+/**
+ *
+ * @param {Buffer} body
+ * @param {number} neededLength
+ * @param {string} fieldName
+ */
+export function ensureSufficientData(body, neededLength, fieldName) {
+    if (body.length < neededLength) {
+        throw new Error(`not enough data for ${fieldName}. need ${neededLength} bytes, got ${body.length} bytes`);
+    }
 }
 
 /**

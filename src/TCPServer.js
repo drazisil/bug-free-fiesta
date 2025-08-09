@@ -3,6 +3,7 @@ import { ServerInstance } from "./ServerInstance.js";
 import { getPacketSerializer } from "./serialize.js";
 import { NPSUserLoginPacket } from "./NPSUserLoginPacket.js";
 import { handlePacket } from "./handlePacket.js";
+import { NPSLoginPacket } from "./NPSLoginPacket.js";
 
 /**
  * @implements {ServerInstance}
@@ -75,6 +76,10 @@ export class TCPServer {
         console.log(`Identified packet as ${packet.packetName}`)
 
         if (packet instanceof NPSUserLoginPacket) {
+            socket.customerId = packet.customerId
+        }
+
+        if (packet instanceof NPSLoginPacket) {
             socket.customerId = packet.customerId
         }
 
